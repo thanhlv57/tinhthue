@@ -11,7 +11,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f0f2f5;
             margin: 0;
-            padding: 10px; /* Giảm padding ngoài trên mobile */
+            padding: 10px;
             color: #333;
             line-height: 1.4;
         }
@@ -20,15 +20,15 @@
             max-width: 900px;
             margin: auto;
             background: #ffffff;
-            padding: 15px; /* Giảm padding container */
+            padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            width: 100%; /* Đảm bảo luôn full width */
+            width: 100%;
         }
 
         .header-area {
             display: flex;
-            flex-wrap: wrap; /* Cho phép rớt dòng trên mobile */
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
@@ -40,22 +40,23 @@
         h2 { 
             margin: 0; 
             color: #1a1a1a; 
-            font-size: 1.2rem; /* Cỡ chữ linh hoạt */
+            font-size: 1.3rem;
         }
 
         .year-selector {
             font-size: 14px;
-            padding: 6px 10px;
+            padding: 8px 12px;
             border-radius: 6px;
             border: 2px solid #007bff;
             font-weight: bold;
             color: #007bff;
             background: white;
+            cursor: pointer;
         }
 
         .input-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Tự nhảy dòng khi màn hình hẹp */
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 15px;
             margin-bottom: 15px;
         }
@@ -65,6 +66,7 @@
             border: 1px solid #eef0f2;
             padding: 15px;
             border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
 
         .input-group h3 {
@@ -72,6 +74,8 @@
             font-size: 16px;
             color: #007bff;
             margin-bottom: 12px;
+            border-bottom: 1px solid #f0f2f5;
+            padding-bottom: 8px;
         }
 
         .field { margin-bottom: 12px; }
@@ -86,18 +90,21 @@
         input {
             width: 100%;
             padding: 10px;
-            font-size: 15px;
+            font-size: 16px;
             border: 1px solid #ced4da;
             border-radius: 6px;
             outline: none;
+            transition: border-color 0.2s;
         }
 
-        .full-width { grid-column: 1 / -1; } /* Chiếm hết hàng bất kể bao nhiêu cột */
+        input:focus { border-color: #007bff; }
+
+        .full-width { grid-column: 1 / -1; }
 
         button {
             width: 100%;
-            padding: 12px;
-            font-size: 16px;
+            padding: 14px;
+            font-size: 18px;
             font-weight: bold;
             background: #28a745;
             color: white;
@@ -105,7 +112,10 @@
             border-radius: 8px;
             cursor: pointer;
             margin-top: 5px;
+            transition: background 0.3s;
         }
+
+        button:hover { background: #218838; }
 
         .result {
             background: #fff9e6;
@@ -113,13 +123,13 @@
             padding: 15px;
             margin-top: 20px;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 15px;
+            line-height: 1.8;
         }
 
-        /* Tối ưu hiển thị bảng trên Mobile */
         .table-responsive {
             width: 100%;
-            overflow-x: auto; /* Cuộn ngang riêng cho bảng nếu màn hình quá nhỏ */
+            overflow-x: auto;
             margin-top: 20px;
             -webkit-overflow-scrolling: touch;
         }
@@ -127,24 +137,25 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 400px; /* Đảm bảo bảng không bị ép quá nhỏ gây khó đọc */
+            min-width: 450px;
         }
 
         th, td {
             border: 1px solid #dee2e6;
-            padding: 10px 8px;
+            padding: 10px;
             text-align: right;
             font-size: 13px;
         }
 
-        th { background: #f8f9fa; }
+        th { background: #f8f9fa; font-weight: 600; }
         .left { text-align: left; }
 
         @media (max-width: 480px) {
             body { padding: 5px; }
-            .container { padding: 10px; }
+            .container { padding: 15px; }
             h2 { font-size: 1.1rem; }
             .input-grid { grid-template-columns: 1fr; }
+            .result { font-size: 14px; }
         }
     </style>
 </head>
@@ -153,12 +164,10 @@
 <div class="container">
     <div class="header-area">
         <h2>Tính thuế TNCN</h2>
-        <div>
-            <select id="taxYear" class="year-selector" onchange="updateYearDefaults(); saveToStorage();">
-                <option value="2025">Năm 2025</option>
-                <option value="2026">Năm 2026</option>
-            </select>
-        </div>
+        <select id="taxYear" class="year-selector" onchange="updateYearDefaults(); saveToStorage();">
+            <option value="2025">Năm 2025</option>
+            <option value="2026">Năm 2026</option>
+        </select>
     </div>
 
     <div class="input-grid">
@@ -185,7 +194,7 @@
                 <input type="text" id="dependentDeduction" value="4.400.000">
             </div>
             <div class="field">
-                <label>Giảm trừ khác (VNĐ - Năm)</label>
+                <label>Giảm trừ khác (VNĐ - Cả năm)</label>
                 <input type="text" id="otherDeduction" value="0">
             </div>
         </div>
@@ -206,8 +215,8 @@
                 <tr>
                     <th>Bậc</th>
                     <th class="left">Thu nhập bậc (Năm)</th>
-                    <th>Thuế %</th>
-                    <th>Thuế</th>
+                    <th>Thuế suất</th>
+                    <th>Thuế nộp</th>
                 </tr>
             </thead>
             <tbody id="taxBody"></tbody>
@@ -216,7 +225,6 @@
 </div>
 
 <script>
-    // Logic Javascript giữ nguyên như các phiên bản trước
     const taxYearSelect = document.getElementById("taxYear");
     const incomeInput = document.getElementById("income");
     const dependentsInput = document.getElementById("dependents");
@@ -312,9 +320,20 @@
 
         let brackets = [];
         if (year === "2026") {
-            brackets = [{ to: 120000000, rate: 0.05 }, { to: 360000000, rate: 0.10 }, { to: 720000000, rate: 0.20 }, { to: 1200000000, rate: 0.30 }, { to: Infinity, rate: 0.35 }];
+            brackets = [
+                { to: 120000000, rate: 0.05 },
+                { to: 360000000, rate: 0.10 },
+                { to: 720000000, rate: 0.20 },
+                { to: 1200000000, rate: 0.30 },
+                { to: Infinity, rate: 0.35 }
+            ];
         } else {
-            brackets = [{ to: 60000000, rate: 0.05 }, { to: 120000000, rate: 0.10 }, { to: 216000000, rate: 0.15 }, { to: 384000000, rate: 0.20 }, { to: 624000000, rate: 0.25 }, { to: 960000000, rate: 0.30 }, { to: Infinity, rate: 0.35 }];
+            brackets = [
+                { to: 60000000, rate: 0.05 }, { to: 120000000, rate: 0.10 },
+                { to: 216000000, rate: 0.15 }, { to: 384000000, rate: 0.20 },
+                { to: 624000000, rate: 0.25 }, { to: 960000000, rate: 0.30 },
+                { to: Infinity, rate: 0.35 }
+            ];
         }
 
         let remaining = taxableIncome;
@@ -343,10 +362,14 @@
             resultColor = "#007bff";
         }
 
+        // TRẢ LẠI CÁCH HIỂN THỊ CHI TIẾT NHIỀU DÒNG
         result.innerHTML = `
-            <div style="font-size:12px; color:#666">Biểu thuế ${year}</div>
-            <b>Giảm trừ:</b> ${formatMoney(totalDeduction)} VNĐ | <b>Chịu thuế:</b> ${formatMoney(taxableIncome)} VNĐ<br>
-            <b style="color:${resultColor}; font-size:1.2rem">${resultLabel} ${formatMoney(resultValue)} VNĐ</b>
+            <div style="font-size:12px; color:#666; margin-bottom:5px">Đang áp dụng biểu thuế năm ${year}</div>
+            <b>Tổng giảm trừ:</b> ${formatMoney(totalDeduction)} VNĐ<br>
+            <b>Thu nhập chịu thuế:</b> ${formatMoney(taxableIncome)} VNĐ<br>
+            <b>Tổng thuế phải nộp:</b> ${formatMoney(totalTax)} VNĐ<br>
+            <b>Thuế đã nộp:</b> ${formatMoney(paidTax)} VNĐ<br>
+            <b style="color:${resultColor}; font-size:20px">${resultLabel} ${formatMoney(resultValue)} VNĐ</b>
         `;
     }
 </script>
