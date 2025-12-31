@@ -28,7 +28,6 @@
             color: #1a1a1a;
         }
 
-        /* Chia cột phần nhập liệu */
         .input-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -36,7 +35,6 @@
             margin-bottom: 20px;
         }
 
-        /* Style cho từng cụm (Card) */
         .input-group {
             background: #ffffff;
             border: 1px solid #eef0f2;
@@ -71,7 +69,7 @@
             font-size: 16px;
             border: 1px solid #ced4da;
             border-radius: 6px;
-            box-sizing: border-box; /* Quan trọng để input không tràn */
+            box-sizing: border-box;
             transition: border-color 0.2s;
         }
 
@@ -81,7 +79,6 @@
             box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
         }
 
-        /* Ô thuế đã nộp nằm ngang hàng dưới */
         .full-width {
             grid-column: span 2;
         }
@@ -91,7 +88,7 @@
             padding: 15px;
             font-size: 18px;
             font-weight: bold;
-            background: #007bff;
+            background: #28a745;
             color: white;
             border: none;
             border-radius: 8px;
@@ -100,7 +97,7 @@
         }
 
         button:hover {
-            background: #0056b3;
+            background: #218838;
         }
 
         .result {
@@ -159,12 +156,16 @@
         <div class="input-group">
             <h3>Giảm trừ</h3>
             <div class="field">
-                <label>Giảm trừ bản thân / tháng (VNĐ)</label>
+                <label>Bản thân / tháng (VNĐ)</label>
                 <input type="text" id="selfDeduction" value="11.000.000">
             </div>
             <div class="field">
-                <label>Giảm trừ người phụ thuộc / tháng / người</label>
+                <label>Người phụ thuộc / tháng / người</label>
                 <input type="text" id="dependentDeduction" value="4.400.000">
+            </div>
+            <div class="field">
+                <label>Giảm trừ khác (VNĐ)</label>
+                <input type="text" id="otherDeduction" value="0" placeholder="Nhập tổng số tiền cả năm">
             </div>
         </div>
 
@@ -196,16 +197,16 @@
     const dependentsInput = document.getElementById("dependents");
     const selfDeductionInput = document.getElementById("selfDeduction");
     const dependentDeductionInput = document.getElementById("dependentDeduction");
+    const otherDeductionInput = document.getElementById("otherDeduction"); // Ô mới
     const paidTaxInput = document.getElementById("paidTax");
     const taxBody = document.getElementById("taxBody");
     const result = document.getElementById("result");
 
-    const inputs = [incomeInput, selfDeductionInput, dependentDeductionInput, paidTaxInput];
+    const inputs = [incomeInput, selfDeductionInput, dependentDeductionInput, otherDeductionInput, paidTaxInput];
     
-    // Thêm sự kiện format cho các ô tiền tệ
     inputs.forEach(input => {
         input.addEventListener("input", () => {
-            formatInput(input);
+            if(input.type === "text") formatInput(input);
             calculateTax();
         });
     });
@@ -228,11 +229,15 @@
     function calculateTax() {
         const income = parseMoney(incomeInput.value);
         const dependents = Number(dependentsInput.value);
+        
+        // Tính các khoản giảm trừ
         const selfDeductionYear = parseMoney(selfDeductionInput.value) * 12;
         const dependentDeductionYear = parseMoney(dependentDeductionInput.value) * 12 * dependents;
+        const otherDeductionYear = parseMoney(otherDeductionInput.value); // Lấy thẳng giá trị năm
+        
         const paidTax = parseMoney(paidTaxInput.value);
 
-        const totalDeduction = selfDeductionYear + dependentDeductionYear;
+        const totalDeduction = selfDeductionYear + dependentDeductionYear + otherDeductionYear;
         let taxableIncome = Math.max(0, income - totalDeduction);
 
         const brackets = [
@@ -273,13 +278,12 @@
         result.innerHTML = `
             <b>Tổng giảm trừ:</b> ${formatMoney(totalDeduction)} VNĐ<br>
             <b>Thu nhập chịu thuế:</b> ${formatMoney(taxableIncome)} VNĐ<br>
-            <b>Tổng thuế phải nộp:</b> ${formatMoney(totalTax)} VNĐ<br>
+            <b>Tổng thuế phải nộp (năm):</b> ${formatMoney(totalTax)} VNĐ<br>
             <b>Thuế đã nộp:</b> ${formatMoney(paidTax)} VNĐ<br>
             <b style="color:#d9534f; font-size:22px">Thuế còn phải nộp: ${formatMoney(taxPayable)} VNĐ</b>
         `;
     }
 
-    // Chạy lần đầu
     calculateTax();
 </script>
 
